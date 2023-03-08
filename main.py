@@ -1,6 +1,7 @@
 import socket
 import threading
-import _thread as th
+import server_message as sm
+import additional_function as ad
 
 print_lock = threading.Lock()
 
@@ -9,16 +10,11 @@ PORT = 5000
 
 
 def connection(socket):
-    while True:
-        message = socket.recv(1024)
-        if not message:
-            try:
-                socket.send(b'SYNTAX ERROR\\a\\b')
-            except BrokenPipeError:
-                print('Client closed the connection.')
-                break
-        else:
-            socket.send(message)
+    BotName_decode, BotName = sm.ACCEPT_CLIENT_USERNAME(socket)
+    KeyID = sm.SERVER_KEY_REQUEST(socket)
+    sm.SERVER_CONFIRMATION(socket, BotName_decode, KeyID)
+    sm.ACCEPT_CLIENT_KEY(socket, BotName_decode, KeyID)
+    ad.alghoritm(socket)
 
 
 def main():
@@ -31,7 +27,15 @@ def main():
         NewSocket, address = Lsocket.accept()
         print_lock.acquire()
         print('Connected to :', address[0], ':', address[1])
-        th.start_new_thread(connection, (NewSocket,))
+        try:
+            thread = threading.Thread(target=connection, args=(NewSocket,))
+            thread.start()
+        except Exception as e:
+            print(e)
+        finally:
+            print_lock.release()
     Lsocket.close()
+
+
 
 main()
