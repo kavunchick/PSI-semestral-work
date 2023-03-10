@@ -27,7 +27,6 @@ def hashName(name):
 def recieveCoordinate(string):
     return tuple(map(int, string.split()[1:]))
 
-
 def algorithm(socket, coordinates=None, direction=None):
     if coordinates == (0, 0):
         socket.send(b'105 GET MESSAGE\a\b')
