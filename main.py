@@ -3,14 +3,15 @@ import threading
 import server_message as sm
 import additional_function as ad
 
+
 print_lock = threading.Lock()
 
 HOST = "127.0.0.1"
-PORT = 4000
+PORT = 6000
 
 
 def connection(socket):
-    BotName_decode, BotName = sm.ACCEPT_CLIENT_USERNAME(socket)
+    BotName_decode = sm.ACCEPT_CLIENT_USERNAME(socket)
     KeyID = sm.SERVER_KEY_REQUEST(socket)
     sm.SERVER_CONFIRMATION(socket, BotName_decode, KeyID)
     sm.ACCEPT_CLIENT_KEY(socket, BotName_decode, KeyID)
