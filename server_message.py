@@ -56,4 +56,7 @@ def SERVER_KEY_REQUEST(socket):
     KeyID = socket.recv(1024)
     if not ad.decodeMessage(KeyID).isnumeric():
         SERVER_SYNTAX_ERROR(socket)
-    return int(ad.decodeMessage(KeyID))
+    KeyID = int(ad.decodeMessage(KeyID))
+    if KeyID > 4 or KeyID < 0:
+        SERVER_KEY_OUT_OF_RANGE_ERROR(socket)
+    return KeyID
