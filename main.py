@@ -6,7 +6,7 @@ import additional_function as ad
 print_lock = threading.Lock()
 
 HOST = "127.0.0.1"
-PORT = 5000
+PORT = 4000
 
 
 def connection(socket):
@@ -14,7 +14,7 @@ def connection(socket):
     KeyID = sm.SERVER_KEY_REQUEST(socket)
     sm.SERVER_CONFIRMATION(socket, BotName_decode, KeyID)
     sm.ACCEPT_CLIENT_KEY(socket, BotName_decode, KeyID)
-    ad.alghoritm(socket)
+    ad.algorithm(socket)
 
 
 def main():
