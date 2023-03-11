@@ -4,20 +4,28 @@ messagesArray = []
 
 
 def receiveMessage(socket):
-    message = b''
-    data = socket.recv(1024)
-    message += data
     global messagesArray
-    if b'\a\b' in data:
-        pattern = b'\a\b'
+    pattern = b'\a\b'
+    message = b''
+    socket.settimeout(1)
+    try:
+        data = socket.recv(1024)
+    except:
+        socket.close()
+    message += data
+    if data.endswith(pattern):
         messagesArray = data.split(pattern)
         messagesArray.pop(-1)
     else:
-        while b'\a\b' not in message:
-            data = socket.recv(1024)
+        while not message.endswith(pattern):
+            socket.settimeout(1)
+            try:
+                data = socket.recv(1024)
+            except:
+                socket.close()
             message += data
-        messagesArray.append(message[:-2])
-
+        messagesArray = message.split(pattern)
+        messagesArray.pop(-1)
 
 
 def decodeMessage(message):
