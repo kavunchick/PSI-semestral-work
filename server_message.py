@@ -18,6 +18,7 @@ def SERVER_SYNTAX_ERROR(socket):
     socket.send(b'301 SYNTAX ERROR\a\b')
     socket.close()
 
+
 def SERVER_PICK_UP(socket):
     socket.send(b'105 GET MESSAGE\a\b')
     if not ad.messagesArray:
@@ -27,6 +28,7 @@ def SERVER_PICK_UP(socket):
         ad.messagesArray.pop(0).decode()
     socket.send(b'106 LOGOUT\a\b')
     socket.close()
+
 
 def ACCEPT_CLIENT_KEY(socket, name, key_id):
     number = (ad.hashName(name) + KEYS[key_id][1]) % 65536
@@ -64,6 +66,11 @@ def ACCEPT_CLIENT_USERNAME(socket):
     if len(BotName) > 16:
         SERVER_SYNTAX_ERROR(socket)
     return BotName
+
+
+def SERVER_LOGIC_ERROR(socket):
+    socket.send(b'302 LOGIC ERROR\a\b')
+    socket.close()
 
 
 def SERVER_KEY_REQUEST(socket):
