@@ -1,3 +1,5 @@
+import time
+
 import server_message as sm
 
 messagesArray = []
@@ -10,6 +12,26 @@ def receiveMessage(socket, stage=None):
     socket.settimeout(1)
     try:
         data = socket.recv(1024)
+        if b'RECHARGING\a\b' in data:
+            messagesArray += data.split(pattern)
+            messagesArray.pop(-1)
+            messagesArray.remove(b'RECHARGING')
+            try:
+                socket.settimeout(5)
+                data = socket.recv(1024)
+                messagesArray += data.split(pattern)
+                messagesArray.pop(-1)
+                if b'FULL POWER' in messagesArray:
+                    messagesArray.remove(b'FULL POWER')
+                    if not messagesArray:
+                        data = socket.recv(1024)
+                        messagesArray += data.split(pattern)
+                        messagesArray.pop(-1)
+                    return
+                else:
+                    sm.SERVER_LOGIC_ERROR(socket)
+            except:
+                socket.close()
         smth = data.split(b'\a\b')
         if stage == 'ACCEPT_CLIENT_USERNAME':
             if len(smth[0]) > 16:
@@ -17,7 +39,7 @@ def receiveMessage(socket, stage=None):
         elif stage == 'SERVER_PICK_UP':
             if len(smth[0]) > 96:
                 sm.SERVER_SYNTAX_ERROR(socket)
-        elif stage == 'coordinates':
+        elif stage == 'coordinates' and ((smth[0] != b'RECHARGING') and (smth[0] != b'FULL POWER')):
             if len(smth[0]) > 8:
                 sm.SERVER_SYNTAX_ERROR(socket)
     except:
