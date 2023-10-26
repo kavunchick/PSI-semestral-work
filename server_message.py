@@ -11,11 +11,13 @@ def SERVER_CONFIRMATION(socket, name, keyID):
 
 def SERVER_KEY_OUT_OF_RANGE_ERROR(socket):
     socket.send(b'303 KEY OUT OF RANGE\a\b')
+    print('===========CONNECTION CLOSED=======')
     socket.close()
 
 
 def SERVER_SYNTAX_ERROR(socket):
     socket.send(b'301 SYNTAX ERROR\a\b')
+    print('===========CONNECTION CLOSED=======')
     socket.close()
 
 
@@ -27,6 +29,7 @@ def SERVER_PICK_UP(socket):
     else:
         ad.messagesArray.pop(0).decode()
     socket.send(b'106 LOGOUT\a\b')
+    print('===========CONNECTION CLOSED=======')
     socket.close()
 
 
@@ -45,6 +48,7 @@ def ACCEPT_CLIENT_KEY(socket, name, key_id):
         socket.send(b'200 OK\a\b')
     else:
         socket.send(b'300 LOGIN FAILED\a\b')
+        print('===========CONNECTION CLOSED=======')
         socket.close()
 
 
@@ -70,6 +74,7 @@ def ACCEPT_CLIENT_USERNAME(socket):
 
 def SERVER_LOGIC_ERROR(socket):
     socket.send(b'302 LOGIC ERROR\a\b')
+    print('===========CONNECTION CLOSED=======')
     socket.close()
 
 
