@@ -1,5 +1,3 @@
-import time
-
 import server_message as sm
 
 messagesArray = []
@@ -40,7 +38,7 @@ def receiveMessage(socket, stage=None):
             if len(smth[0]) > 96:
                 sm.SERVER_SYNTAX_ERROR(socket)
         elif stage == 'coordinates' and ((smth[0] != b'RECHARGING') and (smth[0] != b'FULL POWER')):
-            if len(smth[0]) > 8:
+            if len(smth[0]) > 10:
                 sm.SERVER_SYNTAX_ERROR(socket)
     except:
         socket.close()
@@ -78,8 +76,24 @@ def defineDirection(tup1, tup2):
         if tup1[1] < tup2[1]:
             return 'U'
 
+def something(socket, coordinates):
+    sm.SERVER_TURN_LEFT(socket)
+    if not messagesArray:
+        receiveMessage(socket, 'coordinates')
+        messagesArray.pop(0)
+    else:
+        messagesArray.pop(0).decode()
+    sm.SERVER_MOVE(socket)
+    if not messagesArray:
+        receiveMessage(socket, 'coordinates')
+        coordinates2 = recieveCoordinate(messagesArray.pop(0).decode(), socket)
+    else:
+        coordinates2 = recieveCoordinate(messagesArray.pop(0).decode(), socket)
+    return defineDirection(coordinates, coordinates2), coordinates2
+
 
 def obstacles(socket, direction=None, coordinates=None):
+    print(coordinates, direction)
     if direction == 'R':
         if coordinates[1] < 0:
             sm.SERVER_TURN_LEFT(socket)
@@ -203,6 +217,7 @@ def recieveCoordinate(string, socket):
 
 
 def algorithm(socket, coordinates=None, direction=None):
+    print(coordinates, direction)
     if coordinates == (0, 0):
         sm.SERVER_PICK_UP(socket)
 
@@ -220,7 +235,7 @@ def algorithm(socket, coordinates=None, direction=None):
         else:
             coordinates2 = recieveCoordinate(messagesArray.pop(0).decode(), socket)
         if coordinates == coordinates2:
-            direction, coordinates2 = obstacles(socket)
+            direction, coordinates2 = something(socket, coordinates2)
         else:
             direction = defineDirection(coordinates, coordinates2)
         algorithm(socket, coordinates2, direction)
