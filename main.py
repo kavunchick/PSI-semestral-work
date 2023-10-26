@@ -9,6 +9,7 @@ PORT = 6000
 
 def connection(socket):
     try:
+        print('===========NEW CONNECTION=======')
         BotName_decode = sm.ACCEPT_CLIENT_USERNAME(socket)
         KeyID = sm.SERVER_KEY_REQUEST(socket)
         sm.SERVER_CONFIRMATION(socket, BotName_decode, KeyID)
